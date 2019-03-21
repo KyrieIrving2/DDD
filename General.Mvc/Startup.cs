@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,11 +42,17 @@ namespace General.Mvc
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
-            services.AddDbContext<GeneralDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection")),ServiceLifetime.Scoped);
 
-            services.AddAuthentication("General").AddCookie(o =>
-                o.LoginPath = "/Admin/Login/Index"
+            services.AddDbContext<GeneralDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("SqlServerConnection"), b => b.MigrationsAssembly("General.Mvc")), ServiceLifetime.Scoped);
+
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = CookieAdminAuthInfo.AuthenticationScheme;
+                o.DefaultChallengeScheme = CookieAdminAuthInfo.AuthenticationScheme;
+                o.DefaultSignInScheme = CookieAdminAuthInfo.AuthenticationScheme;
+                o.DefaultSignOutScheme = CookieAdminAuthInfo.AuthenticationScheme;
+            }).AddCookie(CookieAdminAuthInfo.AuthenticationScheme, o =>
+                 o.LoginPath = "/Admin/Login/Index"
             );
 
             //services.AddScoped<IUserService, UserService>();
@@ -55,7 +62,11 @@ namespace General.Mvc
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<IWorkContext, WorkContext>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IAuthAdminService, AuthAdminService>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IMemoryCache, MemoryCache>();
+
 
             //services.BuildServiceProvider().GetService<IUserService>();
             //将services.BuildServiceProvider()保存在静态上下文引擎对象中，供外部调用
@@ -81,7 +92,7 @@ namespace General.Mvc
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-           
+
 
             app.UseMvc(routes =>
             {

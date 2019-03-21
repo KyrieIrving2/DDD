@@ -7,9 +7,15 @@ namespace General.Framework.Controllers
 {
     public class BaseController : Controller
     {
+        private AjaxResult _ajaxResult;
+        public BaseController()
+        {
+            this._ajaxResult = new AjaxResult();
+        }
+
         public AjaxResult AjaxResult
         {
-            get { return new AjaxResult(); }
+            get { return _ajaxResult; }
         }
     }
 }

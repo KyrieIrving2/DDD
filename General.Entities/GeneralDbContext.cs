@@ -13,8 +13,18 @@ namespace General.Entities
 
         }
 
-        public DbSet<User.User> Users { get; set; }
+        public DbSet<User.User> oUsers { get; set; }
+        public DbSet<Role.Role> oRoles { get; set; }
 
-        public DbSet<Role.Role> Roles { get; set; }
+
+
+        public DbSet<Category.Category> Categories { get; set; }
+        public DbSet<SysPermission.SysPermission> SysPermissions { get; set; }
+        public DbSet<SysRole.SysRole> Roles { get; set; }
+        public DbSet<SysUser.SysUser>  Users { get; set; }
+        public DbSet<SysUserLoginLog.SysUserLoginLog>  SysUserLoginLogs { get; set; }
+        public DbSet<SysUserRole.SysUserRole> SysUserRoles { get; set; }
+        public DbSet<SysUserToken.SysUserToken> SysUserTokens { get; set; }
+
     }
 }

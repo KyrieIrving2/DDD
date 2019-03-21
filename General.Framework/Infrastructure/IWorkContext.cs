@@ -6,6 +6,6 @@ namespace General.Framework.Infrastructure
 {
    public interface IWorkContext
     {
-        Entities.User.User CurrentUser { get; }
+        Entities.SysUser.SysUser CurrentUser { get; }
     }
 }

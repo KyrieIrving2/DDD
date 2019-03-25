@@ -18,11 +18,5 @@ namespace General.Framework.Security.Admin
         /// <param name="acount"></param>
         void SignIn(string token, string acount);
 
-
-        /// <summary>
-        /// 注销登录：删除Cookie登录状态
-        /// </summary>
-        void SignOut();
-
     }
 }

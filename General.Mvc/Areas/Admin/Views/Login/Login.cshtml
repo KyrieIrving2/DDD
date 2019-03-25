@@ -1,4 +1,6 @@
 ﻿
+@model General.Entities.SysUser.LoginModel
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,16 +67,19 @@
                                             <fieldset>
                                                 <label class="block clearfix">
                                                     <span class="block input-icon input-icon-right">
-                                                        <input type="text" class="form-control" name="Account" placeholder="Username" />
+                                                        <input id="account" type="text" class="form-control" name="Account" placeholder="Username" />
                                                         <i class="icon-user"></i>
                                                     </span>
                                                 </label>
 
                                                 <label class="block clearfix">
                                                     <span class="block input-icon input-icon-right">
-                                                        <input type="password" class="form-control" name="Password" placeholder="Password" />
+                                                        <input id="password" type="password" class="form-control" name="Password" placeholder="Password" />
                                                         <i class="icon-lock"></i>
                                                     </span>
+                                                </label>
+                                                <label>
+                                                    <input id="ramdom_id" type="hidden" value="@Model.R" />
                                                 </label>
 
                                                 <div class="space"></div>
@@ -85,12 +90,12 @@
                                                         <span class="lbl"> Remember Me</span>
                                                     </label>
 
-                                                    <button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+                                                    <button id="btn_submit" type="button" class="width-35 pull-right btn btn-sm btn-primary">
                                                         <i class="icon-key"></i>
                                                         Login
                                                     </button>
                                                 </div>
-
+                                                <p id="error_messege"></p>
                                                 <div class="space-4"></div>
                                             </fieldset>
                                         </form>
@@ -256,9 +261,9 @@
     <!-- basic scripts -->
     <!--[if !IE]> -->
 
-    <script type="text/javascript">
-        window.jQuery || document.write("<script src='/assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
-    </script>
+    @*<script type="text/javascript">
+        window.jQuery || document.write("<script src='/assets/js/jquery-2.0.3.min.js'>" + "<" + "/script>");
+    </script>*@
 
     <!-- <![endif]-->
     <!--[if IE]>
@@ -267,22 +272,53 @@
     </script>
     <![endif]-->
 
-    <script type="text/javascript">
-        if ("ontouchend" in document) document.write("<script src='/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
-    </script>
+    @*<script type="text/javascript">
+        if ("ontouchend" in document) document.write("<script src='/assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+    </script>*@
 
     <!-- inline scripts related to this page -->
 
-    <script type="text/javascript">
-			function show_box(id) {
-			 jQuery('.widget-box.visible').removeClass('visible');
-			 jQuery('#'+id).addClass('visible');
-			}
+    @*<script type="text/javascript">
+        function show_box(id) {
+            jQuery('.widget-box.visible').removeClass('visible');
+            jQuery('#' + id).addClass('visible');
+        }
     </script>
     <script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fe9e1d61340ff3d9495a8cca04ebdb49d' type='text/javascript'%3E%3C/script%3E"));
+        var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+        document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fe9e1d61340ff3d9495a8cca04ebdb49d' type='text/javascript'%3E%3C/script%3E"));
+    </script>*@
+
+    <script src="~/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/jquery.md5.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            Submit();
+        });
+        function Submit() {
+            $("#btn_submit").click(function () {
+                var account = $("#account").val();
+                var password = $("#password").val();
+                var ramdom = $("#ramdom_id").val();
+                $.get('@Url.RouteUrl("GetSaltByAccount")?account=' + account, function (data) {
+                    var salt = data;
+                    password = $.md5(password + salt);
+                    password = $.md5(password + ramdom);
+                    $.post('@Url.RouteUrl("LoginAction")', { "Account": account, "Password": password }, function (msg) {
+                        console.log(msg);
+                        if (msg.status) {
+                            $("#error_messege").html(msg.sessege);
+                            window.location.href = '@Url.RouteUrl("MainIndex")';
+                        } else {
+                            $("#error_messege").html(msg.Messege);
+                        }
+                    })
+                })
+            });
+        }
     </script>
-    <a href="http://www.iteblog.com">过往记忆</a>
 </body>
 </html>

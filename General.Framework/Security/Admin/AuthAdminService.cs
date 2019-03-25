@@ -29,6 +29,7 @@ namespace General.Framework.Security.Admin
             if (result.Principal == null)
                 return null;
             var token = result.Principal.FindFirst(ClaimTypes.Sid).Value;
+
             return _sysUserService.GetUserByToken(token ?? "");
         }
 
@@ -46,6 +47,12 @@ namespace General.Framework.Security.Admin
             _httpContextAccessor.HttpContext.SignInAsync(CookieAdminAuthInfo.AuthenticationScheme, claimsPrincipal);
         }
 
-
+        /// <summary>
+        /// 注销登录：删除Cookie登录状态
+        /// </summary>
+        public void SignOut()
+        {
+            _httpContextAccessor.HttpContext.SignOutAsync(CookieAdminAuthInfo.AuthenticationScheme);
+        }
     }
 }

@@ -53,8 +53,8 @@ namespace General.Services.SysUser
                     return (false, "该账号被锁定" + (user.AllowLoginTime - DateTime.Now).ToString(), null, null);
                 }
             }
-            string md5Password = EncryptorHelper.GetMD5(password + r);
-            if (md5Password.Equals(user.Password, StringComparison.InvariantCultureIgnoreCase))
+            string md5Password = EncryptorHelper.GetMD5(user.Password + r);//存到数据库里面的Password:Md5(用户明文密码+salt)
+            if (password.Equals(md5Password, StringComparison.InvariantCultureIgnoreCase))
             {
                 //密码正确
                 user.LoginLock = false;
